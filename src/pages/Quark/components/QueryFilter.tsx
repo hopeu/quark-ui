@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ActionType }from '@ant-design/pro-table';
 import { history } from 'umi';
 import { get } from '@/services/action';
-import ProForm, { 
+import ProForm, {
   QueryFilter as ProQueryFilter,
   ProFormText,
   ProFormDatePicker,
@@ -11,7 +11,7 @@ import ProForm, {
   ProFormDateTimeRangePicker,
   ProFormSelect
 } from '@ant-design/pro-form';
-import { 
+import {
   Input,Form
 } from 'antd';
 
@@ -72,10 +72,8 @@ const QueryFilter: React.FC<Action> = (props) => {
     // hack random
     query['random'] = Math.random();
 
-    console.log(JSON.stringify(query));
-    console.log('on_reset');
     history.push({ pathname: history.location.pathname, query: query });
-    
+
     if (props.current) {
       props.current.pageInfo.current = 1;
       props.current.reload();
@@ -95,7 +93,7 @@ const QueryFilter: React.FC<Action> = (props) => {
         }
         return item;
       });
-      
+
       const getItems = await Promise.all(promises);
       setItems(getItems);
     }
@@ -111,7 +109,7 @@ const QueryFilter: React.FC<Action> = (props) => {
     switch(item.component) {
       case 'input':
         if(item.operator == 'between') {
-          component = 
+          component =
           <ProForm.Group title={item.label}>
             <ProFormText
               key={item.name+'_start'}
@@ -127,7 +125,7 @@ const QueryFilter: React.FC<Action> = (props) => {
             />
           </ProForm.Group>
         } else {
-          component = 
+          component =
           <ProFormText
             key={item.name}
             name={item.name}
@@ -139,7 +137,7 @@ const QueryFilter: React.FC<Action> = (props) => {
 
         break;
       case 'select':
-        component = 
+        component =
         <ProFormSelect
           key={item.name}
           label={item.label}
@@ -153,7 +151,7 @@ const QueryFilter: React.FC<Action> = (props) => {
         />
         break;
       case 'multipleSelect':
-        component = 
+        component =
         <ProFormSelect
           mode="multiple"
           key={item.name}
@@ -167,7 +165,7 @@ const QueryFilter: React.FC<Action> = (props) => {
 
       case 'datetime':
         if(item.operator == 'between') {
-          component = 
+          component =
           <ProFormDateTimeRangePicker
             key={item.name}
             label={item.label}
@@ -175,7 +173,7 @@ const QueryFilter: React.FC<Action> = (props) => {
             style={item.style ? item.style : []}
           />
         } else {
-          component = 
+          component =
           <ProFormDateTimePicker
             key={item.name}
             name={item.name}
@@ -188,7 +186,7 @@ const QueryFilter: React.FC<Action> = (props) => {
 
       case 'date':
         if(item.operator == 'between') {
-          component = 
+          component =
           <ProFormDateRangePicker
             key={item.name}
             label={item.label}
@@ -196,7 +194,7 @@ const QueryFilter: React.FC<Action> = (props) => {
             style={item.style ? item.style : []}
           />
         } else {
-          component = 
+          component =
           <ProFormDatePicker
             key={item.name}
             name={item.name}
@@ -208,7 +206,7 @@ const QueryFilter: React.FC<Action> = (props) => {
         break;
 
       case 'inputGroup':
-        component = 
+        component =
           <Form.Item label={item.label} labelAlign={props.search.labelAlign}>
             <Input.Group compact>
               <ProFormSelect

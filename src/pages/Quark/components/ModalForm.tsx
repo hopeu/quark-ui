@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useModel, history } from 'umi';
-import { get, post } from '@/services/action';
+import React, {useState} from 'react';
+import {useModel, history} from 'umi';
+import {get, post} from '@/services/action';
 import moment from 'moment';
 import {
   Form,
@@ -9,33 +9,34 @@ import {
   Modal,
   Space
 } from 'antd';
-import { createFromIconfontCN } from '@ant-design/icons';
+import {createFromIconfontCN} from '@ant-design/icons';
 import FormItem from './FormItem';
+import {ProForm} from "@ant-design/pro-form";
 
-const ModalForm: React.FC<any> = (props:any) => {
+const ModalForm: React.FC<any> = (props: any) => {
   const [form] = Form.useForm();
-  const { initialState } = useModel('@@initialState');
+  const {initialState} = useModel('@@initialState');
   const IconFont = createFromIconfontCN({
     scriptUrl: initialState.settings.iconfontUrl,
   });
 
   const [formComponent, setFormComponentState] = useState({
-    api:null,
-    style:undefined,
-    title:undefined,
-    width:undefined,
-    initialValues:{},
-    items:[],
-    colon:undefined,
-    labelAlign:undefined,
-    name:undefined,
-    preserve:undefined,
-    requiredMark:undefined,
-    scrollToFirstError:undefined,
-    size:undefined,
-    layout:undefined,
-    labelCol:undefined,
-    wrapperCol:undefined,
+    api: null,
+    style: undefined,
+    title: undefined,
+    width: undefined,
+    initialValues: {},
+    items: [],
+    colon: undefined,
+    labelAlign: undefined,
+    name: undefined,
+    preserve: undefined,
+    requiredMark: undefined,
+    scrollToFirstError: undefined,
+    size: undefined,
+    layout: undefined,
+    labelCol: undefined,
+    wrapperCol: undefined,
   });
 
   const [visible, setVisible] = useState(false);
@@ -44,35 +45,41 @@ const ModalForm: React.FC<any> = (props:any) => {
     const result = await get({
       actionUrl: props.modal
     });
+
+    if (result.status === 'error') {
+      message.error(result.msg);
+      return;
+    }
+
     const formComponent = findFormComponent(result.data);
     setFormComponentState(formComponent)
 
     let initialValues = formComponent.initialValues;
-    formComponent.items.map((item:any) => {
-      if(item.component === 'time') {
-        if(initialValues.hasOwnProperty(item.name)) {
-          initialValues[item.name] = moment(initialValues[item.name],item.format);
+    formComponent.items.map((item: any) => {
+      if (item.component === 'time') {
+        if (initialValues.hasOwnProperty(item.name)) {
+          initialValues[item.name] = moment(initialValues[item.name], item.format);
         }
       }
     });
-    
+
     form.setFieldsValue(initialValues);
     setVisible(true);
   }
 
-  const findFormComponent:any = (data:any) => {
-    if(data.component === 'form') {
+  const findFormComponent: any = (data: any) => {
+    if (data.component === 'form') {
       return data;
     }
 
-    if(data.hasOwnProperty('content')) {
+    if (data.hasOwnProperty('content')) {
       return findFormComponent(data.content);
     }
-  
+
     let conmpontent = [];
 
-    if(data.hasOwnProperty(0)) {
-      conmpontent = (data.map((item:any) => {
+    if (data.hasOwnProperty(0)) {
+      conmpontent = (data.map((item: any) => {
         return findFormComponent(item);
       }));
     }
@@ -80,35 +87,40 @@ const ModalForm: React.FC<any> = (props:any) => {
     return conmpontent
   }
 
-  let trigger:any = null;
+  let trigger: any = null;
   switch (props.component) {
     case 'buttonStyle':
       trigger =
-      <Button
-        key={props.key}
-        type={props.type}
-        block={props.block}
-        danger={props.danger}
-        disabled={props.disabled}
-        ghost={props.ghost}
-        shape={props.shape}
-        size={props.size}
-        icon={props.icon ? <IconFont type={props.icon} /> : null}
-        style={props.style}
-        onClick={()=>{getComponent()}}
-      >
-        {props.name}
-      </Button>
+        <Button
+          type={props.type}
+          block={props.block}
+          danger={props.danger}
+          disabled={props.disabled}
+          ghost={props.ghost}
+          shape={props.shape}
+          size={props.size}
+          icon={props.icon ? <IconFont type={props.icon}/> : null}
+          style={props.style}
+          onClick={() => {
+            getComponent()
+          }}
+        >
+          {props.name}
+        </Button>
       break;
     case 'aStyle':
       trigger =
-        <a key={props.key} style={props.style} onClick={()=>{getComponent()}}>
+        <a style={props.style} onClick={() => {
+          getComponent()
+        }}>
           {props.name}
         </a>
       break;
     case 'itemStyle':
       trigger =
-        <a key={props.key} style={props.style} onClick={()=>{getComponent()}}>
+        <a style={props.style} onClick={() => {
+          getComponent()
+        }}>
           {props.name}
         </a>
       break;
@@ -117,22 +129,22 @@ const ModalForm: React.FC<any> = (props:any) => {
   }
 
   const formButtonRender = (formComponent: any) => {
-    if(formComponent.disabledSubmitButton === true) {
+    if (formComponent.disabledSubmitButton === true) {
       return null;
     }
-    
+
     return (
       <Space>
-        <Button onClick={()=>setVisible(false)}>
+        <Button onClick={() => setVisible(false)}>
           取消
         </Button>
         <Button
           onClick={() => {
-            form.validateFields().then((values:any) => {
-                onFinish(values);
-              }).catch((info:any) => {
-                console.log('Validate Failed:', info);
-              });
+            form.validateFields().then((values: any) => {
+              onFinish(values);
+            }).catch((info: any) => {
+              console.log('Validate Failed:', info);
+            });
           }}
           type="primary"
         >
@@ -148,7 +160,7 @@ const ModalForm: React.FC<any> = (props:any) => {
       ...values
     });
 
-    if(result.status === 'success') {
+    if (result.status === 'success') {
       setVisible(false)
       form.resetFields();
       message.success(result.msg);
@@ -159,7 +171,7 @@ const ModalForm: React.FC<any> = (props:any) => {
       message.error(result.msg);
     }
 
-    if(result.url) {
+    if (result.url) {
       history.push(result.url);
     }
   };
@@ -170,14 +182,14 @@ const ModalForm: React.FC<any> = (props:any) => {
       <Modal
         title={formComponent.title ? formComponent.title : undefined}
         width={formComponent.width ? formComponent.width : undefined}
-        visible={visible}
-        onCancel={()=>setVisible(false)}
+        open={visible}
+        onCancel={() => setVisible(false)}
         onOk={() => {
           form.validateFields().then(values => {
-              onFinish(values);
-            }).catch(info => {
-              console.log('Validate Failed:', info);
-            });
+            onFinish(values);
+          }).catch(info => {
+            console.log('Validate Failed:', info);
+          });
         }}
         footer={
           <div
@@ -189,7 +201,7 @@ const ModalForm: React.FC<any> = (props:any) => {
           </div>
         }
       >
-        <Form
+        <ProForm
           form={form}
           style={formComponent.style}
           colon={formComponent.colon}
@@ -202,9 +214,10 @@ const ModalForm: React.FC<any> = (props:any) => {
           layout={formComponent.layout}
           labelCol={formComponent.labelCol}
           wrapperCol={formComponent.wrapperCol}
+          submitter={false}
         >
-          <FormItem form={form} items={formComponent.items} />
-        </Form>
+          <FormItem form={form} items={formComponent.items}/>
+        </ProForm>
       </Modal>
     </>
   );

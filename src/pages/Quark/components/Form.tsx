@@ -1,9 +1,9 @@
-import React, {  useEffect } from 'react';
+import React, {useEffect} from 'react';
 import ProForm from '@ant-design/pro-form';
 import ProCard from '@ant-design/pro-card';
 import FormItem from './FormItem';
-import { history } from 'umi';
-import { post } from '@/services/action';
+import {history} from 'umi';
+import {post} from '@/services/action';
 import moment from 'moment';
 import {
   Space,
@@ -14,18 +14,19 @@ import {
 
 export interface Form {
   form: any;
+  key: string
 }
 
-const Form: React.FC<Form> = (props:any) => {
+const Form: React.FC<Form> = (props: any) => {
 
   const [form] = AntForm.useForm();
 
   useEffect(() => {
-    let initialValues = props.form.initialValues;
-    props.form.items.map((item:any) => {
-      if(item.component === 'time') {
-        if(initialValues.hasOwnProperty(item.name)) {
-          initialValues[item.name] = moment(initialValues[item.name],item.format);
+    const {initialValues} = props.form;
+    props.form.items.forEach((item: any) => {
+      if (item.component === 'time') {
+        if (initialValues.hasOwnProperty(item.name)) {
+          initialValues[item.name] = moment(initialValues[item.name], item.format);
         }
       }
     })
@@ -38,33 +39,36 @@ const Form: React.FC<Form> = (props:any) => {
       ...values
     });
 
-    if(result.status === 'success') {
+    if (result.status === 'success') {
       message.success(result.msg);
     } else {
       message.error(result.msg);
     }
 
-    if(result.url) {
+    if (result.url) {
       history.push(result.url);
     }
   };
-
-  if(props.form.title) {
+  if (props.form.title) {
     return (
       <ProCard
-        key={'proCard'+props.form.key}
+        key={`proCard${  props.form.key}`}
         title={props.form.title}
         headerBordered={true}
         extra={
-          <Button type="link" onClick={e => {history.go(-1);}}>
+          <Button type="link" onClick={e => {
+            history.go(-1);
+          }}>
             返回上一页
           </Button>
         }
       >
         <ProForm
           form={form}
-          onFinish={async (values:any) => { onFinish(values) }}
-          style={props.form.style ? props.form.style : {margin:'25px',width:'100%'}}
+          onFinish={async (values: any) => {
+            onFinish(values)
+          }}
+          style={props.form.style ? props.form.style : {margin: '25px', width: '100%'}}
           colon={props.form.colon}
           labelAlign={props.form.labelAlign}
           name={props.form.name}
@@ -81,22 +85,22 @@ const Form: React.FC<Form> = (props:any) => {
               resetText: props.form.resetButtonText,
               submitText: props.form.submitButtonText,
             },
-            render: (proFormProps:any, doms:any) => {
-              if(props.form.disabledResetButton === true && props.form.disabledSubmitButton === true && props.form.disabledBackButton === true) {
+            render: (proFormProps: any, doms: any) => {
+              if (props.form.disabledResetButton === true && props.form.disabledSubmitButton === true && props.form.disabledBackButton === true) {
                 return null;
               }
 
               return (
                 <AntForm.Item wrapperCol={props.form.buttonWrapperCol}>
                   <Space>
-                    {!props.form.disabledResetButton ? 
-                        doms[0]
+                    {!props.form.disabledResetButton ?
+                      doms[0]
                       : null}
-                    {!props.form.disabledSubmitButton ? 
-                        doms[1]
+                    {!props.form.disabledSubmitButton ?
+                      doms[1]
                       : null}
-                    {!props.form.disabledBackButton ? 
-                        <Button onClick={e => history.go(-1)}>{props.form.backButtonText}</Button>
+                    {!props.form.disabledBackButton ?
+                      <Button onClick={e => history.go(-1)}>{props.form.backButtonText}</Button>
                       : null}
                   </Space>
                 </AntForm.Item>
@@ -104,7 +108,7 @@ const Form: React.FC<Form> = (props:any) => {
             },
           }}
         >
-          <FormItem form={form} items={props.form.items} />
+          <FormItem form={form} items={props.form.items} key={`form-item-${  props.form.key}`}/>
         </ProForm>
       </ProCard>
     );
@@ -112,7 +116,9 @@ const Form: React.FC<Form> = (props:any) => {
     return (
       <ProForm
         form={form}
-        onFinish={async (values:any) => { onFinish(values) }}
+        onFinish={async (values: any) => {
+          onFinish(values)
+        }}
         style={props.form.style}
         colon={props.form.colon}
         labelAlign={props.form.labelAlign}
@@ -130,22 +136,22 @@ const Form: React.FC<Form> = (props:any) => {
             resetText: props.form.resetButtonText,
             submitText: props.form.submitButtonText,
           },
-          render: (proFormProps:any, doms:any) => {
-            if(props.form.disabledResetButton === true && props.form.disabledSubmitButton === true && props.form.disabledBackButton === true) {
+          render: (proFormProps: any, doms: any) => {
+            if (props.form.disabledResetButton === true && props.form.disabledSubmitButton === true && props.form.disabledBackButton === true) {
               return null;
             }
 
             return (
               <AntForm.Item wrapperCol={props.form.buttonWrapperCol}>
                 <Space>
-                  {!props.form.disabledResetButton ? 
-                      doms[0]
+                  {!props.form.disabledResetButton ?
+                    doms[0]
                     : null}
-                  {!props.form.disabledSubmitButton ? 
-                      doms[1]
+                  {!props.form.disabledSubmitButton ?
+                    doms[1]
                     : null}
-                  {!props.form.disabledBackButton ? 
-                      <Button onClick={e => history.go(-1)}>{props.form.backButtonText}</Button>
+                  {!props.form.disabledBackButton ?
+                    <Button onClick={e => history.go(-1)}>{props.form.backButtonText}</Button>
                     : null}
                 </Space>
               </AntForm.Item>
@@ -153,7 +159,7 @@ const Form: React.FC<Form> = (props:any) => {
           },
         }}
       >
-        <FormItem form={form} items={props.form.items} />
+        <FormItem form={form} items={props.form.items} key={`form-item-${  props.form.key}`}/>
       </ProForm>
     );
   }

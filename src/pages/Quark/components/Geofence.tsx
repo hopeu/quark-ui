@@ -53,7 +53,7 @@ const Geofence: React.FC<Map> = ({ zoom=null, mapKey=undefined, value={ center: 
       triggerChange({ ...mapData });
     },
   };
-  
+
   const editorEvents = {
     created: (instance:any) => {console.log(instance)},
     addnode: (instance:any) => {
@@ -211,7 +211,7 @@ const Geofence: React.FC<Map> = ({ zoom=null, mapKey=undefined, value={ center: 
               longitude: getPosition.longitude,
               latitude: getPosition.latitude
             }}
-            visible={true}
+            open={true}
             clickable={true}
             draggable={true}
           />

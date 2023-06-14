@@ -10,6 +10,7 @@ import Show from '@/pages/Quark/components/Show';
 import Upgrade from '@/pages/Quark/components/Upgrade';
 
 import {
+  message,
   Statistic,
 } from 'antd';
 
@@ -89,7 +90,6 @@ const ComponentRender: React.FC<any> = (props:any) => {
       case 'form':
         component =
           <Form
-            key={content.key}
             form={content}
           />
         break;
@@ -125,20 +125,20 @@ const ComponentRender: React.FC<any> = (props:any) => {
     }
     return component;
   }
-  
+
   const componentRender = (content:any) => {
     if(content === null) {
       return null;
     }
-  
+
     if(typeof content === 'string' || typeof content === 'number') {
       return <span>{content}</span>;
     }
-  
+
     if(content.hasOwnProperty('component')) {
       return parseComponent(content);
     }
-  
+
     let component:any = null;
     if(content.hasOwnProperty(0)) {
       component = (
@@ -147,7 +147,7 @@ const ComponentRender: React.FC<any> = (props:any) => {
         })
       )
     }
-  
+
     return component;
   }
 
@@ -158,7 +158,16 @@ const ComponentRender: React.FC<any> = (props:any) => {
         actionUrl: api,
         ...history.location.query
       });
-      setComponentState(result.data)
+      if(result.status === 'success'){
+        setComponentState(result.data)
+      }else {
+        message.error(result.msg);
+      }
+
+      if(result.url) {
+        history.push(result.url);
+      }
+
     }
   }
 

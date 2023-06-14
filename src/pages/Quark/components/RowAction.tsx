@@ -4,6 +4,7 @@ import { useModel, Link } from 'umi';
 import { get } from '@/services/action';
 import ModalForm from './ModalForm';
 import DrawerForm from './DrawerForm';
+import ModelShow from './ModalShow';
 import {
   Button,
   Modal,
@@ -14,6 +15,7 @@ import {
   message
 } from 'antd';
 import { ExclamationCircleOutlined, DownOutlined, createFromIconfontCN } from '@ant-design/icons';
+import {history} from "@@/core/history";
 
 export interface Action {
   actions: {};
@@ -44,14 +46,19 @@ const RowAction: React.FC<Action> = (props) => {
 
   // 执行行为
   const executeAction = async (api:string) => {
+    const hide = message.loading("请求中")
     const result = await get({
       actionUrl: api
     });
-
+    hide();
     if(result.status === 'success') {
       if (props.current) {
         props.current.reload();
       }
+      if(result.url) {
+        history.push(result.url);
+      }
+      message.success(result.msg);
     } else {
       message.error(result.msg);
     }
@@ -68,30 +75,32 @@ const RowAction: React.FC<Action> = (props) => {
     if(item.href) {
       // 跳转行为
       if(item.target === '_blank') {
-        component = 
+        component =
         <a key={item.key} href={item.href} target={item.target} style={item.style}>
           {item.name}
         </a>
       } else {
-        component = 
+        component =
         <Link key={item.key} style={item.style} to={item.href}>
           {item.name}
         </Link>
       }
-    } else if(item.modal) {
+    } else if(item.modal && item.target === 'show') {
+      component = <ModelShow current={props.current} {...item} />
+    }  else if(item.modal) {
       component = <ModalForm current={props.current} {...item} />
     } else if(item.drawer) {
       component = <DrawerForm current={props.current} {...item} />
     } else {
       // 执行操作行为
-      component = 
+      component =
       <a key={item.key} style={item.style} onClick={()=>{executeAction(item.api)}}>
         {item.name}
       </a>
 
       // 是否带确认
       if(item.confirm) {
-        component = 
+        component =
         <a key={item.key} style={item.style} onClick={()=>{showConfirm(item.confirm,item.api)}}>
           {item.name}
         </a>
@@ -99,7 +108,7 @@ const RowAction: React.FC<Action> = (props) => {
 
       // 带Popconfirm确认
       if(item.popconfirm) {
-        component = 
+        component =
         <Popconfirm
           key={item.key}
           placement="topRight"
@@ -120,7 +129,7 @@ const RowAction: React.FC<Action> = (props) => {
     let component = null;
     if(item.href) {
       if(item.target === '_blank') {
-        component = 
+        component =
         <Button
           key={item.key}
           type={item.type}
@@ -138,7 +147,7 @@ const RowAction: React.FC<Action> = (props) => {
           {item.name}
         </Button>
       } else {
-        component = 
+        component =
         <Link key={item.key} to={item.href}>
           <Button
             key={item.key}
@@ -156,12 +165,14 @@ const RowAction: React.FC<Action> = (props) => {
           </Button>
         </Link>
       }
+    } else if(item.modal && item.target === 'show') {
+      component = <ModelShow current={props.current} {...item} />
     } else if(item.modal) {
       component = <ModalForm current={props.current} {...item} />
     } else if(item.drawer) {
       component = <DrawerForm current={props.current} {...item} />
     } else {
-      component = 
+      component =
       <Button
         key={item.key}
         type={item.type}
@@ -179,7 +190,7 @@ const RowAction: React.FC<Action> = (props) => {
       </Button>
 
       if(item.confirm) {
-        component = 
+        component =
         <Button
           key={item.key}
           type={item.type}
@@ -199,7 +210,7 @@ const RowAction: React.FC<Action> = (props) => {
 
       // 带Popconfirm确认
       if(item.popconfirm) {
-        component = 
+        component =
         <Popconfirm
           key={item.key}
           placement="topRight"

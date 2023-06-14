@@ -24,6 +24,7 @@ interface LoginType extends React.FC<LoginProps> {
   Tab: typeof LoginTab;
   Submit: typeof LoginSubmit;
   Username: React.FunctionComponent<LoginItemProps>;
+  Email: React.FunctionComponent<LoginItemProps>;
   Password: React.FunctionComponent<LoginItemProps>;
   Mobile: React.FunctionComponent<LoginItemProps>;
   Captcha: React.FunctionComponent<LoginItemProps>;
@@ -91,7 +92,6 @@ const Login: LoginType = (props) => {
                 destroyInactiveTabPane
                 animated={false}
                 className={styles.tabs}
-                activeKey={tabActiveType}
                 onChange={(activeKey) => {
                   setType(activeKey);
                 }}
@@ -115,6 +115,7 @@ Login.Submit = LoginSubmit;
 Login.Username = LoginItem.Username;
 Login.Password = LoginItem.Password;
 Login.Mobile = LoginItem.Mobile;
+Login.Email = LoginItem.Email;
 Login.Captcha = LoginItem.Captcha;
 Login.ImageCaptcha = LoginItem.ImageCaptcha;
 

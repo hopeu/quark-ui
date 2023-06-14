@@ -1,31 +1,28 @@
 import React, {useEffect, useState} from 'react';
-import { useModel } from 'umi';
-import { get } from '@/services/action';
+import {useModel} from 'umi';
+import {get} from '@/services/action';
 import {
+  ProFormItem,
   ProFormText,
-  ProFormCheckbox,
-  ProFormRadio,
-  ProFormSwitch,
+  // ProFormCheckbox,
+  // ProFormRadio,
+  // ProFormSwitch,
   ProFormTextArea,
-  ProFormSelect,
+  // ProFormSelect,
+  ProFormList,
   ProFormDigit,
   ProFormDatePicker,
   ProFormDateTimePicker,
   ProFormDateRangePicker,
   ProFormDateTimeRangePicker,
   ProFormGroup,
-  ProFormTimePicker
+  // ProFormTimePicker,
 } from '@ant-design/pro-form';
-import { createFromIconfontCN,PlusOutlined } from '@ant-design/icons';
+import {createFromIconfontCN} from '@ant-design/icons';
 import {
   Tree,
-  Form,
   Select,
-  Space,
-  Button,
   TimePicker,
-  Input,
-  InputNumber,
   Checkbox,
   Radio,
   Switch
@@ -39,17 +36,18 @@ import Map from './Map';
 import Geofence from './Geofence';
 import Editor from './Editor';
 import Cascader from './Cascader';
+import FormTable from "@/pages/Quark/components/FormTable";
 
 export interface FormItem {
-  key?:any;
+  key?: any;
   items: any;
-  form?:any;
+  form?: any;
 }
 
-const FormItem: React.FC<FormItem> = (props:any) => {
-  const { initialState } = useModel('@@initialState');
+const FormItem: React.FC<FormItem> = (props: any) => {
+  const {initialState} = useModel('@@initialState');
   const IconFont = createFromIconfontCN({
-    scriptUrl: initialState.settings.iconfontUrl,
+    scriptUrl: initialState?.settings?.iconfontUrl,
   });
 
   //hack
@@ -57,19 +55,19 @@ const FormItem: React.FC<FormItem> = (props:any) => {
   const [items, setItems] = useState(props.items);
   useEffect(() => {
     setItems(props.items);
-  },  [props.items])
+  }, [props.items])
 
-  const onChange = (value:any,name:string) => {
+  const onChange = (value: any, name: string) => {
     let item = {};
     item[name] = value;
     props.form.setFieldsValue(item);
     setRandom(Math.random);
   };
 
-  const onSelectChange = async (value:any, name:string, load:any = null) => {
-    if(load) {
-      const promises = items.map(async (item:any,key:any) => {
-        if(load.field === item.name && load.api) {
+  const onSelectChange = async (value: any, name: string, load: any = null) => {
+    if (load) {
+      const promises = items.map(async (item: any, key: any) => {
+        if (load.field === item.name && load.api) {
           const result = await get({
             actionUrl: load.api,
             search: value
@@ -84,154 +82,161 @@ const FormItem: React.FC<FormItem> = (props:any) => {
       setItems(getItems);
     }
 
-    let getItem = {};
+    const getItem = {};
     getItem[name] = value;
     props.form.setFieldsValue(getItem);
-    setRandom(Math.random);
   };
 
   // 解析表单item
-  const formItemRender = (items:any,field:any = null) => {
-    const formItemComponent = (
-      items.map((item:any,key:any) => {
-        let component:any = null;
+  const formItemRender = (fromItems: any, field: any = null): any => {
+    return (
+      fromItems.map((item: any) => {
+        let component: any = null;
         switch (item.component) {
           case 'text':
-            if(item.type === 'text') {
+            if (item.type === 'text') {
               component =
-              <Form.Item
-                key={item.key}
-                name={field ? [field.name, item.name] : item.name}
-                fieldKey={field ? [field.fieldKey, item.name] : item.name}
-                label={item.label}
-                tooltip={item.tooltip}
-                rules={item.frontendRules}
-                extra={item.extra}
-                help={item.help ? item.help : undefined}
-              >
-                <Input
+                <ProFormText
+                  key={item.key}
+                  label={item.label}
+                  name={field ? [field.name, item.name] : item.name}
+                  fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                  rules={item.frontendRules}
+                  help={item.help ? item.help : undefined}
+                  extra={item.extra}
+                  tooltip={item.tooltip}
                   placeholder={item.placeholder}
-                  style={item.style ? item.style : []}
-                  width={item.width}
-                  disabled={item.disabled}
-                  allowClear={item.allowClear}
-                  maxLength={item.maxLength}
-                  addonAfter={item.addonAfter}
-                  addonBefore={item.addonBefore}
-                  size={item.size}
-                  onChange={(e)=>{onChange(e.target.value,item.name)}}
-                />
-              </Form.Item>;
+                  fieldProps={{
+                    style: item.style ? item.style : [],
+                    width: item.width,
+                    disabled: item.disabled,
+                    maxLength: item.maxLength,
+                    addonAfter: item.addonAfter,
+                    addonBefore: item.addonBefore,
+                    onChange: (e) => {
+                      onChange(e.target.value, item.name)
+                    },
+                    allowClear: item.allowClear,
+                    size: item.size
+                  }}
+                />;
             }
 
-            if(item.type === 'password') {
+            if (item.type === 'password') {
               component =
-              <Form.Item
-                key={item.key}
-                name={field ? [field.name, item.name] : item.name}
-                fieldKey={field ? [field.fieldKey, item.name] : item.name}
-                label={item.label}
-                tooltip={item.tooltip}
-                rules={item.frontendRules}
-                extra={item.extra}
-                help={item.help ? item.help : undefined}
-              >
-                <Input.Password
+                <ProFormText.Password
+                  key={item.key}
+                  label={item.label}
+                  name={field ? [field.name, item.name] : item.name}
+                  fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                  rules={item.frontendRules}
+                  help={item.help ? item.help : undefined}
+                  extra={item.extra}
+                  tooltip={item.tooltip}
                   placeholder={item.placeholder}
-                  style={item.style ? item.style : []}
-                  width={item.width}
-                  disabled={item.disabled}
-                  allowClear={item.allowClear}
-                  maxLength={item.maxLength}
-                  addonAfter={item.addonAfter}
-                  addonBefore={item.addonBefore}
-                  size={item.size}
-                  onChange={(e)=>{onChange(e.target.value,item.name)}}
-                />
-              </Form.Item>;
+                  fieldProps={{
+                    style: item.style ? item.style : [],
+                    width: item.width,
+                    disabled: item.disabled,
+                    maxLength: item.maxLength,
+                    addonAfter: item.addonAfter,
+                    addonBefore: item.addonBefore,
+                    onChange: (e) => {
+                      onChange(e.target.value, item.name)
+                    },
+                    allowClear: item.allowClear,
+                    size: item.size
+                  }}
+                />;
             }
             break;
           case 'textArea':
             component =
-            <Form.Item
-              key={item.key}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              label={item.label}
-              tooltip={item.tooltip}
-              rules={item.frontendRules}
-              extra={item.extra}
-              help={item.help ? item.help : undefined}
-            >
-              <Input.TextArea
+              <ProFormTextArea
+                key={item.key}
+                label={item.label}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                rules={item.frontendRules}
+                help={item.help ? item.help : undefined}
+                extra={item.extra}
+                tooltip={item.tooltip}
                 placeholder={item.placeholder}
-                style={item.style ? item.style : []}
-                disabled={item.disabled}
-                allowClear={item.allowClear}
-                maxLength={item.maxLength}
-                autoSize={item.autoSize}
-                onChange={(e)=>{onChange(e.target.value,item.name)}}
-                onKeyPress={(e) => {
-                  e.stopPropagation();
+                fieldProps={{
+                  style: item.style ? item.style : [],
+                  disabled: item.disabled,
+                  maxLength: item.maxLength,
+                  autoSize: item.autoSize,
+                  allowClear: item.allowClear,
+                  size: item.size,
+                  onChange: (e) => {
+                    onChange(e.target.value, item.name)
+                  },
+                  onKeyPress: (e) => {
+                    e.stopPropagation();
+                  }
                 }}
-              />
-            </Form.Item>;
+              />;
             break;
           case 'inputNumber':
             component =
-            <Form.Item
-              key={item.key}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              label={item.label}
-              tooltip={item.tooltip}
-              rules={item.frontendRules}
-              extra={item.extra}
-              help={item.help ? item.help : undefined}
-            >
-              <InputNumber
+              <ProFormDigit
+                key={item.key}
+                label={item.label}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                rules={item.frontendRules}
+                help={item.help ? item.help : undefined}
+                extra={item.extra}
+                tooltip={item.tooltip}
                 placeholder={item.placeholder}
-                style={item.style ? item.style : []}
-                width={item.width}
-                disabled={item.disabled}
-                maxLength={item.maxLength}
                 min={item.min}
                 max={item.max}
-                step={item.step}
-                precision={item.precision}
-                onChange={(value)=>{onChange(value,item.name)}}
+                fieldProps={{
+                  precision: item.precision,
+                  style: item.style ? item.style : [],
+                  width: item.width,
+                  disabled: item.disabled,
+                  maxLength: item.maxLength,
+                  addonAfter: item.addonAfter,
+                  addonBefore: item.addonBefore,
+                  step: item.step,
+                  size: item.size,
+                  onChange: (value) => {
+                    onChange(value, item.name)
+                  },
+                }}
               />
-            </Form.Item>;
             break;
           case 'icon':
             component =
-            <Form.Item
-              key={item.name}
-              label={item.label}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              tooltip={item.tooltip}
-              rules={item.frontendRules}
-              help={item.help ? item.help : undefined}
-              extra={item.extra}
-            >
-              <Select style={item.style ? item.style : []} disabled={item.disabled} placeholder={item.placeholder}>
-                <Select.Option key={0} value={0}>
-                  无图标
-                </Select.Option>
-                {item.options.map((item: any) => {
-                  return (
-                    <Select.Option key={item} value={item}>
-                      <IconFont type={item} /> {item}
-                    </Select.Option>
-                  );
-                })}
-              </Select>
-            </Form.Item>
+              <ProFormItem
+                key={item.name}
+                label={item.label}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                tooltip={item.tooltip}
+                rules={item.frontendRules}
+                help={item.help ? item.help : undefined}
+                extra={item.extra}
+              >
+                <Select style={item.style ? item.style : []} disabled={item.disabled} placeholder={item.placeholder}>
+                  <Select.Option key={0} value={0}>
+                    无图标
+                  </Select.Option>
+                  {item.options.map((i: any) => {
+                    return (
+                      <Select.Option key={i} value={i}>
+                        <IconFont type={i}/> {i}
+                      </Select.Option>
+                    );
+                  })}
+                </Select>
+              </ProFormItem>
             break;
           case 'hidden':
             component =
-            <span key={item.key} style={{display:'none'}}>
+              <span key={item.key} style={{display: 'none'}}>
               <ProFormText
                 key={item.key}
                 name={field ? [field.name, item.name] : item.name}
@@ -241,471 +246,483 @@ const FormItem: React.FC<FormItem> = (props:any) => {
             break;
           case 'checkbox':
             component =
-            <Form.Item
-              key={item.key}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              label={item.label}
-              tooltip={item.tooltip}
-              rules={item.frontendRules}
-              extra={item.extra}
-              help={item.help ? item.help : undefined}
-            >
-              <Checkbox.Group
-                style={item.style ? item.style : []}
-                options={item.options}
-                disabled={item.disabled}
-                onChange={(value)=>{onChange(value,item.name)}}
-              />
-            </Form.Item>;
+              <ProFormItem
+                key={item.key}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                label={item.label}
+                tooltip={item.tooltip}
+                rules={item.frontendRules}
+                extra={item.extra}
+                help={item.help ? item.help : undefined}
+              >
+                <Checkbox.Group
+                  style={item.style ? item.style : []}
+                  options={item.options}
+                  disabled={item.disabled}
+                  onChange={(value) => {
+                    onChange(value, item.name)
+                  }}
+                />
+              </ProFormItem>;
             break;
           case 'radio':
             component =
-            <Form.Item
-              key={item.key}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              label={item.label}
-              tooltip={item.tooltip}
-              rules={item.frontendRules}
-              extra={item.extra}
-              help={item.help ? item.help : undefined}
-            >
-              <Radio.Group
-                style={item.style ? item.style : []}
-                options={item.options}
-                disabled={item.disabled}
-                onChange={(e)=>{onChange(e.target.value,item.name)}}
-              />
-            </Form.Item>;
+              <ProFormItem
+                key={item.key}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                label={item.label}
+                tooltip={item.tooltip}
+                rules={item.frontendRules}
+                extra={item.extra}
+                help={item.help ? item.help : undefined}
+              >
+                <Radio.Group
+                  style={item.style ? item.style : []}
+                  options={item.options}
+                  disabled={item.disabled}
+                  onChange={(e) => {
+                    onChange(e.target.value, item.name)
+                  }}
+                />
+              </ProFormItem>;
             break;
           case 'image':
             component =
-            <Form.Item
-              key={item.key}
-              label={item.label}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              style={item.style}
-              tooltip={item.tooltip}
-              rules={item.frontendRules}
-              help={item.help ? item.help : undefined}
-              extra={item.extra}
-            >
-              <ImageUploader
+              <ProFormItem
                 key={item.key}
-                mode={item.mode}
-                title={item.button}
-                limitType={item.limitType}
-                limitSize={item.limitSize}
-                limitNum={item.limitNum}
-                limitWH={item.limitWH}
-                action={item.api}
-              />
-            </Form.Item>;
+                label={item.label}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                style={item.style}
+                tooltip={item.tooltip}
+                rules={item.frontendRules}
+                help={item.help ? item.help : undefined}
+                extra={item.extra}
+              >
+                <ImageUploader
+                  key={item.key}
+                  mode={item.mode}
+                  title={item.button}
+                  limitType={item.limitType}
+                  limitSize={item.limitSize}
+                  limitNum={item.limitNum}
+                  limitWH={item.limitWH}
+                  action={item.api}
+                />
+              </ProFormItem>;
             break;
           case 'file':
             component =
-            <Form.Item
-              key={item.key}
-              label={item.label}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              style={item.style}
-              tooltip={item.tooltip}
-              rules={item.frontendRules}
-              help={item.help ? item.help : undefined}
-              extra={item.extra}
-            >
-              <FileUploader
+              <ProFormItem
                 key={item.key}
-                title={item.button}
-                limitType={item.limitType}
-                limitSize={item.limitSize}
-                limitNum={item.limitNum}
-                action={item.api}
-              />
-            </Form.Item>;
+                label={item.label}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                style={item.style}
+                tooltip={item.tooltip}
+                rules={item.frontendRules}
+                help={item.help ? item.help : undefined}
+                extra={item.extra}
+              >
+                <FileUploader
+                  key={item.key}
+                  title={item.button}
+                  limitType={item.limitType}
+                  limitSize={item.limitSize}
+                  limitNum={item.limitNum}
+                  action={item.api}
+                />
+              </ProFormItem>;
             break;
           case 'switch':
             component =
-            <Form.Item
-              key={item.key}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              label={item.label}
-              tooltip={item.tooltip}
-              rules={item.frontendRules}
-              extra={item.extra}
-              help={item.help ? item.help : undefined}
-              valuePropName={'checked'}
-            >
-              <Switch
-                style={item.style ? item.style : []}
-                disabled={item.disabled}
-                onChange={(value)=>{onChange(value,item.name)}}
-                checkedChildren={item.options.on}
-                unCheckedChildren={item.options.off}
-              />
-            </Form.Item>;
+              <ProFormItem
+                key={item.key}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                label={item.label}
+                tooltip={item.tooltip}
+                rules={item.frontendRules}
+                extra={item.extra}
+                help={item.help ? item.help : undefined}
+                valuePropName={'checked'}
+              >
+                <Switch
+                  style={item.style ? item.style : []}
+                  disabled={item.disabled}
+                  onChange={(value) => {
+                    onChange(value, item.name)
+                  }}
+                  checkedChildren={item.options.on}
+                  unCheckedChildren={item.options.off}
+                />
+              </ProFormItem>;
             break;
           case 'select':
             component =
-            <Form.Item
-              key={item.key}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              label={item.label}
-              tooltip={item.tooltip}
-              rules={item.frontendRules}
-              extra={item.extra}
-              help={item.help ? item.help : undefined}
-            >
-              <Select
-                placeholder={item.placeholder}
-                style={item.style ? item.style : []}
-                options={item.options}
-                disabled={item.disabled}
-                mode={item.mode}
-                allowClear={item.allowClear}
-                size={item.size}
-                onChange={(value)=>{onSelectChange(value,item.name,item.load)}}
-              />
-            </Form.Item>;
+              <ProFormItem
+                key={item.key}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                label={item.label}
+                tooltip={item.tooltip}
+                rules={item.frontendRules}
+                extra={item.extra}
+                help={item.help ? item.help : undefined}
+              >
+                <Select
+                  placeholder={item.placeholder}
+                  style={item.style ? item.style : []}
+                  options={item.options}
+                  disabled={item.disabled}
+                  mode={item.mode}
+                  allowClear={item.allowClear}
+                  size={item.size}
+                  onChange={(value) => {
+                    onSelectChange(value, item.name, item.load).then(() => {
+
+                    });
+                  }}
+                />
+              </ProFormItem>;
             break;
           case 'tree':
             component =
-            <Form.Item
-              key={item.key}
-              label={item.label}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              valuePropName={'checkedKeys'}
-              trigger={'onCheck'}
-              rules={item.frontendRules}
-              help={item.help ? item.help : undefined}
-              extra={item.extra}
-            >
-              <Tree
-                checkable
-                style={item.style ? item.style : []}
-                treeData={item.treeData}
-              />
-            </Form.Item>;
+              <ProFormItem
+                key={item.key}
+                label={item.label}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                valuePropName={'checkedKeys'}
+                trigger={'onCheck'}
+                rules={item.frontendRules}
+                help={item.help ? item.help : undefined}
+                extra={item.extra}
+                tooltip={item.tooltip}
+              >
+                <Tree
+                  checkable
+                  style={item.style ? item.style : []}
+                  treeData={item.treeData}
+                />
+              </ProFormItem>;
             break;
           case 'cascader':
             component =
-            <Form.Item
-              key={item.key}
-              label={item.label}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              rules={item.frontendRules}
-              help={item.help ? item.help : undefined}
-              extra={item.extra}
-            >
-              <Cascader
-                api={item.api}
-                size={item.size}
-                options={item.options}
-                style={item.style}
-                placeholder={item.placeholder}
-              />
-            </Form.Item>;
+              <ProFormItem
+                key={item.key}
+                label={item.label}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                rules={item.frontendRules}
+                help={item.help ? item.help : undefined}
+                extra={item.extra}
+                tooltip={item.tooltip}
+              >
+                <Cascader
+                  api={item.api}
+                  size={item.size}
+                  options={item.options}
+                  style={item.style}
+                  placeholder={item.placeholder}
+                />
+              </ProFormItem>;
             break;
           case 'date':
             component =
-            <ProFormDatePicker
-              key={item.key}
-              label={item.label}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              rules={item.frontendRules}
-              help={item.help ? item.help : undefined}
-              extra={item.extra}
-              placeholder={item.placeholder}
-              fieldProps={{
-                allowClear:item.allowClear,
-                size:item.size
-              }}
-            />;
+              <ProFormDatePicker
+                key={item.key}
+                label={item.label}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                rules={item.frontendRules}
+                help={item.help ? item.help : undefined}
+                extra={item.extra}
+                tooltip={item.tooltip}
+                placeholder={item.placeholder}
+                fieldProps={{
+                  format: item.format ? item.format : 'YYYY-MM-DD',
+                  allowClear: item.allowClear,
+                  size: item.size
+                }}
+              />;
             break;
           case 'datetime':
             component =
-            <ProFormDateTimePicker
-              key={item.key}
-              label={item.label}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              rules={item.frontendRules}
-              help={item.help ? item.help : undefined}
-              extra={item.extra}
-              placeholder={item.placeholder}
-              fieldProps={{
-                allowClear:item.allowClear,
-                size:item.size
-              }}
-            />;
+              <ProFormDateTimePicker
+                key={item.key}
+                label={item.label}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                rules={item.frontendRules}
+                help={item.help ? item.help : undefined}
+                extra={item.extra}
+                tooltip={item.tooltip}
+                placeholder={item.placeholder}
+                fieldProps={{
+                  allowClear: item.allowClear,
+                  size: item.size
+                }}
+              />;
             break;
           case 'dateRange':
             component =
-            <ProFormDateRangePicker
-              key={item.key}
-              label={item.label}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              rules={item.frontendRules}
-              help={item.help ? item.help : undefined}
-              extra={item.extra}
-              placeholder={item.placeholder}
-              fieldProps={{
-                allowClear:item.allowClear,
-                size:item.size
-              }}
-            />;
+              <ProFormDateRangePicker
+                key={item.key}
+                label={item.label}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                rules={item.frontendRules}
+                help={item.help ? item.help : undefined}
+                extra={item.extra}
+                tooltip={item.tooltip}
+                placeholder={item.placeholder}
+                fieldProps={{
+                  allowClear: item.allowClear,
+                  size: item.size
+                }}
+              />;
             break;
           case 'datetimeRange':
             component =
-            <ProFormDateTimeRangePicker
-              key={item.key}
-              label={item.label}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              rules={item.frontendRules}
-              help={item.help ? item.help : undefined}
-              extra={item.extra}
-              placeholder={item.placeholder}
-              fieldProps={{
-                allowClear:item.allowClear,
-                size:item.size
-              }}
-            />;
+              <ProFormDateTimeRangePicker
+                key={item.key}
+                label={item.label}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                rules={item.frontendRules}
+                help={item.help ? item.help : undefined}
+                extra={item.extra}
+                tooltip={item.tooltip}
+                placeholder={item.placeholder}
+                fieldProps={{
+                  allowClear: item.allowClear,
+                  size: item.size
+                }}
+              />;
             break;
           case 'time':
             component =
-            <Form.Item
-              key={item.key}
-              label={item.label}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              rules={item.frontendRules}
-              help={item.help ? item.help : undefined}
-              extra={item.extra}
-            >
-              <TimePicker
-                size={item.size}
-                locale={locale}
-                format={item.format}
-              />
-            </Form.Item>;
+              <ProFormItem
+                key={item.key}
+                label={item.label}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                rules={item.frontendRules}
+                help={item.help ? item.help : undefined}
+                extra={item.extra}
+              >
+                <TimePicker
+                  size={item.size}
+                  locale={locale}
+                  format={item.format}
+                />
+              </ProFormItem>;
             break;
           case 'timeRange':
             component =
-            <Form.Item
-              key={item.key}
-              label={item.label}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              rules={item.frontendRules}
-              help={item.help ? item.help : undefined}
-              extra={item.extra}
-            >
-              <TimePicker.RangePicker
-                size={item.size}
-                locale={locale}
-                format={item.format}
-              />
-            </Form.Item>;
+              <ProFormItem
+                key={item.key}
+                label={item.label}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                rules={item.frontendRules}
+                help={item.help ? item.help : undefined}
+                extra={item.extra}
+              >
+                <TimePicker.RangePicker
+                  size={item.size}
+                  locale={locale}
+                  format={item.format}
+                />
+              </ProFormItem>;
             break;
           case 'display':
             component =
-            <Form.Item label={item.label}>
+              <ProFormItem label={item.label} tooltip={item.tooltip}>
               <span style={item.style ? item.style : []}>
                 {item.value}
               </span>
-            </Form.Item>
+              </ProFormItem>
             break;
           case 'editor':
             component =
-            <Form.Item
-              key={item.key}
-              label={item.label}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              rules={item.frontendRules}
-              help={item.help ? item.help : undefined}
-              extra={item.extra}
-            >
-              <Editor
+              <ProFormItem
                 key={item.key}
-                height={item?.style?.height}
-                width={item?.style?.width}
-              />
-            </Form.Item>;
+                label={item.label}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                rules={item.frontendRules}
+                help={item.help ? item.help : undefined}
+                extra={item.extra}
+                tooltip={item.tooltip}
+              >
+                <Editor
+                  key={item.key}
+                  height={item?.style?.height}
+                  width={item?.style?.width}
+                />
+              </ProFormItem>;
             break;
           case 'list':
             component =
-            <Form.Item
-              key={item.name}
-              label={item.label}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              rules={item.frontendRules}
-              help={item.help ? item.help : undefined}
-              extra={item.extra}
-            >
-              <Form.List key={item.name} name={item.name}>
-                {(fields, { add, remove }) => {
-                  return (
-                    <div>
-                      {fields.map(field => (
-                        <Space align="start" style={{width:'100%'}}>
-                          <Space
-                            key={field.key}
-                            align="start"
-                            style={{ display: 'flex' }}
-                            direction="vertical"
-                          >
-                            {formItemRender(item.items,field)}
-                          </Space>
-                          <Button onClick={() => { remove(field.name); }} type="primary">删除</Button>
-                        </Space>
-                      ))}
-                      <Form.Item>
-                        <Button
-                          type="dashed"
-                          onClick={() => {add();}}
-                          block
-                        >
-                          <PlusOutlined /> {item.button}
-                        </Button>
-                      </Form.Item>
-                    </div>
-                  );
-                }}
-              </Form.List>
-            </Form.Item>;
+              <ProFormList
+                key={item.name}
+                label={item.label}
+                name={field ? [field.name, item.name] : item.name}
+                creatorButtonProps={{creatorButtonText: item.button}}
+                rules={item.frontendRules}
+                // fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                // help={item.help ? item.help : undefined}
+                // extra={item.extra}
+                tooltip={item.tooltip}
+              >
+                <ProFormGroup>
+                  {formItemRender(item.items)}
+                </ProFormGroup>
+              </ProFormList>
             break;
           case 'search':
             component =
-            <Form.Item
-              key={item.key}
-              label={item.label}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              rules={item.frontendRules}
-              help={item.help ? item.help : undefined}
-              extra={item.extra}
-            >
-              <Search
-                mode={item.mode}
-                size={item.size}
-                placeholder={item.placeholder}
-                style={item.style}
-                options={item.options}
-                api={item.api}
-                allowClear={item.allowClear}
-              />
-            </Form.Item>;
+              <ProFormItem
+                key={item.key}
+                label={item.label}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                rules={item.frontendRules}
+                help={item.help ? item.help : undefined}
+                extra={item.extra}
+                tooltip={item.tooltip}
+              >
+                <Search
+                  mode={item.mode}
+                  size={item.size}
+                  placeholder={item.placeholder}
+                  style={item.style}
+                  options={item.options}
+                  api={item.api}
+                  allowClear={item.allowClear}
+                />
+              </ProFormItem>;
             break;
           case 'map':
             component =
-            <Form.Item
-              key={item.key}
-              label={item.label}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              rules={item.frontendRules}
-              help={item.help ? item.help : undefined}
-              extra={item.extra}
-            >
-              <Map
-                zoom={item.zoom}
-                mapKey={item.mapKey}
-                style={item.style}
-              />
-            </Form.Item>;
+              <ProFormItem
+                key={item.key}
+                label={item.label}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                rules={item.frontendRules}
+                help={item.help ? item.help : undefined}
+                extra={item.extra}
+                tooltip={item.tooltip}
+              >
+                <Map
+                  zoom={item.zoom}
+                  mapKey={item.mapKey}
+                  style={item.style}
+                />
+              </ProFormItem>;
             break;
           case 'geofence':
             component =
-            <Form.Item
-              key={item.key}
-              label={item.label}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              rules={item.frontendRules}
-              help={item.help ? item.help : undefined}
-              extra={item.extra}
-            >
-              <Geofence
-                zoom={item.zoom}
-                mapKey={item.mapKey}
-                style={item.style}
-              />
-            </Form.Item>;
+              <ProFormItem
+                key={item.key}
+                label={item.label}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                rules={item.frontendRules}
+                help={item.help ? item.help : undefined}
+                extra={item.extra}
+                tooltip={item.tooltip}
+              >
+                <Geofence
+                  zoom={item.zoom}
+                  mapKey={item.mapKey}
+                  style={item.style}
+                />
+              </ProFormItem>;
             break;
           case 'group':
-            component = <ProFormGroup title={item.title} children={formItemRender(item.children)}/>
+            component =
+              <ProFormGroup
+                key={item.key}
+                title={item.title}
+                extra={item.extra}
+                tooltip={item.tooltip}
+                direction={item.direction}
+                children={formItemRender(item.children)}/>
+            break;
+          case 'table':
+            component =
+              <FormTable
+                key={item.key}
+                form={props.form}
+                field={field}
+                item={item}
+              />
             break;
           default:
             component =
-            <Form.Item
-              key={item.name}
-              label={item.label}
-              name={field ? [field.name, item.name] : item.name}
-              fieldKey={field ? [field.fieldKey, item.name] : item.name}
-              help={item.help ? item.help : undefined}
-              extra={item.extra}
-            >
+              <ProFormItem
+                key={item.name}
+                label={item.label}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                help={item.help ? item.help : undefined}
+                extra={item.extra}
+              >
               <span key={item.key}>
                 无{item.component}组件
               </span>
-            </Form.Item>;
+              </ProFormItem>;
             break;
         }
 
         // 解析when
-        if(item.when) {
-          var whenItemComponent:any = null;
-          item.when.map((whenItem:any,key:any) => {
+        if (item.when) {
+          let whenItemComponent: any = null;
+          item.when.forEach((whenItem: any) => {
             switch (whenItem.operator) {
               case '=':
-                if(props.form.getFieldValue(item.name) == whenItem.value) {
+                if (props.form.getFieldValue(item.name) == whenItem.value) {
                   whenItemComponent = formItemRender(whenItem.items)
                 }
                 break;
               case '>':
-                if(props.form.getFieldValue(item.name) > whenItem.value) {
+                if (props.form.getFieldValue(item.name) > whenItem.value) {
                   whenItemComponent = formItemRender(whenItem.items)
                 }
                 break;
               case '<':
-                if(props.form.getFieldValue(item.name) < whenItem.value) {
+                if (props.form.getFieldValue(item.name) < whenItem.value) {
                   whenItemComponent = formItemRender(whenItem.items)
                 }
                 break;
               case '<=':
-                if(props.form.getFieldValue(item.name) <= whenItem.value) {
+                if (props.form.getFieldValue(item.name) <= whenItem.value) {
                   whenItemComponent = formItemRender(whenItem.items)
                 }
                 break;
               case '>=':
-                if(props.form.getFieldValue(item.name) >= whenItem.value) {
+                if (props.form.getFieldValue(item.name) >= whenItem.value) {
                   whenItemComponent = formItemRender(whenItem.items)
                 }
                 break;
               case 'has':
-                if(props.form.getFieldValue(item.name).indexOf(whenItem.value) != -1) {
+                if (props.form.getFieldValue(item.name).indexOf(whenItem.value) != -1) {
                   whenItemComponent = formItemRender(whenItem.items)
                 }
                 break;
               case 'in':
-                if(whenItem.value.indexOf(props.form.getFieldValue(item.name)) != -1) {
+                if (whenItem.value.indexOf(props.form.getFieldValue(item.name)) != -1) {
                   whenItemComponent = formItemRender(whenItem.items)
                 }
                 break;
               default:
-                if(item.value == whenItem.value) {
+                if (item.value == whenItem.value) {
                   whenItemComponent = formItemRender(whenItem.items)
                 }
                 break;
@@ -713,12 +730,10 @@ const FormItem: React.FC<FormItem> = (props:any) => {
           });
 
           return <>{component}{whenItemComponent}</>;
-        } else {
-          return component;
         }
+        return component;
       })
     )
-    return formItemComponent;
   }
 
   return (

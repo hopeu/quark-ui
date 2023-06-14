@@ -1,8 +1,8 @@
-import { BasicLayoutProps, Settings as LayoutSettings } from '@ant-design/pro-layout';
-import { notification } from 'antd';
-import { history, RequestConfig } from 'umi';
-import { ResponseError } from 'umi-request';
-import { queryQuarkInfo, queryQuarkLayout, queryQuarkMenus, queryAccountInfo } from '@/services/quark';
+import {BasicLayoutProps, Settings as LayoutSettings} from '@ant-design/pro-layout';
+import {notification} from 'antd';
+import {history, RequestConfig} from 'umi';
+import {ResponseError} from 'umi-request';
+import {queryQuarkInfo, queryQuarkLayout, queryQuarkMenus, queryAccountInfo} from '@/services/quark';
 import defaultSettings from '../config/defaultSettings';
 import logo from './assets/logo.png';
 import {Response} from "express";
@@ -42,7 +42,7 @@ export async function getInitialState(): Promise<{
       const accountInfo = await fetchUserInfo();
       const quarkLayout = await fetchLayoutInfo();
       const quarkMenus = await fetchMenusInfo();
-      if(!quarkLayout.data.logo) {
+      if (!quarkLayout.data.logo) {
         quarkLayout.data.logo = logo;
       }
       return {
@@ -92,18 +92,22 @@ const codeMessage = {
  */
 const errorHandler = (error: ResponseError) => {
 
-  const { response } = error;
+  const {response} = error;
   if (response && response.status) {
     const errorText = codeMessage[response.status] || response.statusText;
-    const { status, url } = response;
+    const {status, url} = response;
 
-    notification.error({
-      message: `请求错误 ${status}: ${url}`,
-      description: errorText,
-    });
-
-    if(response.status == 401){ //未登录跳转登录
-      history.push('/user/login');
+    if (response.status == 401) { // 未登录跳转登录
+      history.replace(`/user/login?redirect=${encodeURIComponent(location.hash.substr(1))}`);
+      notification.error({
+        message: '未登录或登录过期',
+        description: '请重新登录',
+      });
+    }else {
+      notification.error({
+        message: `请求错误 ${status}: ${url}`,
+        description: errorText,
+      });
     }
   }
 
@@ -121,9 +125,9 @@ export const request: RequestConfig = {
   errorHandler: errorHandler,
   responseInterceptors: [
     (response, options) => {
-      if(response.status == 208){ //跳转新的url
+      if (response.status == 208) { //跳转新的url
         const locationUrl = response.headers.get('Location');
-        if(locationUrl){
+        if (locationUrl) {
           window.open(locationUrl, response.headers.get('Target') || '_blank');
         }
       }
@@ -135,8 +139,9 @@ export const request: RequestConfig = {
     (url: string, options) => {
       options.headers = {
         Accept: 'application/json',
-        Authorization: `Bearer ${sessionStorage.getItem('token') ?? ''}` };
-      return { url, options };
+        Authorization: `Bearer ${sessionStorage.getItem('token') ?? ''}`
+      };
+      return {url, options};
     }
   ],
 };

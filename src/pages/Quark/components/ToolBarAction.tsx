@@ -29,7 +29,7 @@ const ToolBarAction: React.FC<Action> = (props) => {
   const { confirm } = Modal;
 
   // 替换查询变量
-  const replaceQueryVariable = (url:any) => 
+  const replaceQueryVariable = (url:any) =>
   {
     let query = {};
     var urls = url.split("?");
@@ -68,10 +68,11 @@ const ToolBarAction: React.FC<Action> = (props) => {
 
   // 执行行为
   const executeAction = async (api:string) => {
+    const hide = message.loading("请求中")
     const result = await get({
       actionUrl: replaceQueryVariable(api)
     });
-
+    hide();
     if(result.status === 'success') {
       if (props.current) {
         props.current.reload();
@@ -92,12 +93,12 @@ const ToolBarAction: React.FC<Action> = (props) => {
     if(item.href) {
       // 跳转行为
       if(item.target === '_blank') {
-        component = 
+        component =
         <a key={item.key} href={replaceQueryVariable(item.href)} target={item.target} style={item.style}>
           {item.name}
         </a>
       } else {
-        component = 
+        component =
         <Link key={item.key} style={item.style} to={replaceQueryVariable(item.href)}>
           {item.name}
         </Link>
@@ -108,14 +109,14 @@ const ToolBarAction: React.FC<Action> = (props) => {
       component = <DrawerForm current={props.current} {...item} />
     } else {
       // 执行操作行为
-      component = 
+      component =
       <a key={item.key} style={item.style} onClick={()=>{executeAction(item.api)}}>
         {item.name}
       </a>
 
       // 是否带确认
       if(item.confirm) {
-        component = 
+        component =
         <a key={item.key} style={item.style} onClick={()=>{showConfirm(item.confirm,item.api)}}>
           {item.name}
         </a>
@@ -123,7 +124,7 @@ const ToolBarAction: React.FC<Action> = (props) => {
 
       // 带Popconfirm确认
       if(item.popconfirm) {
-        component = 
+        component =
         <Popconfirm
           key={item.key}
           placement="topRight"
@@ -144,7 +145,7 @@ const ToolBarAction: React.FC<Action> = (props) => {
     let component = null;
     if(item.href) {
       if(item.target === '_blank') {
-        component = 
+        component =
         <Button
           key={item.key}
           type={item.type}
@@ -162,7 +163,7 @@ const ToolBarAction: React.FC<Action> = (props) => {
           {item.name}
         </Button>
       } else {
-        component = 
+        component =
         <Link key={item.key} to={item.href}>
           <Button
             key={item.key}
@@ -185,7 +186,7 @@ const ToolBarAction: React.FC<Action> = (props) => {
     } else if(item.drawer) {
       component = <DrawerForm current={props.current} {...item} />
     } else {
-      component = 
+      component =
       <Button
         key={item.key}
         type={item.type}
@@ -203,7 +204,7 @@ const ToolBarAction: React.FC<Action> = (props) => {
       </Button>
 
       if(item.confirm) {
-        component = 
+        component =
         <Button
           key={item.key}
           type={item.type}
@@ -223,7 +224,7 @@ const ToolBarAction: React.FC<Action> = (props) => {
 
       // 带Popconfirm确认
       if(item.popconfirm) {
-        component = 
+        component =
         <Popconfirm
           key={item.key}
           placement="topRight"

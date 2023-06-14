@@ -183,7 +183,7 @@ const EditorPage: React.FC<any> = ({ value, onChange , height, width }) => {
     if(result.status === 'error') {
       message.error(result.msg, 3);
     }
-    
+
     getPictures(1);
     return true;
   };
@@ -209,7 +209,7 @@ const EditorPage: React.FC<any> = ({ value, onChange , height, width }) => {
     if(result.status === 'error') {
       message.error(result.msg, 3);
     }
-    
+
     getPictures(1);
     return true;
   };
@@ -244,7 +244,7 @@ const EditorPage: React.FC<any> = ({ value, onChange , height, width }) => {
 
       <Modal
         title="图片管理"
-        visible={pictureBoxVisible}
+        open={pictureBoxVisible}
         onOk={insertPicture}
         onCancel={closePictureBox}
         width={1100}

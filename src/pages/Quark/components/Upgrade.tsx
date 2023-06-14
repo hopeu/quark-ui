@@ -73,18 +73,18 @@ const Upgrade: React.FC<any> = props => {
    */
   const loginOut = async () => {
     await accountLogout();
-    const { query, pathname } = history.location;
+    const { query } = history.location;
     const { redirect } = query;
     if (window.location.pathname !== '/user/login' && !redirect) {
       history.replace({
         pathname: '/user/login',
         search: stringify({
-          redirect: pathname+'?'+stringify(query),
+          redirect: encodeURIComponent(location.hash),
         }),
       });
     }
   };
-  
+
   const upgradeApp = async (currentStep:number) => {
     if(currentStep <= steps.length) {
       let result = await get({
@@ -125,7 +125,7 @@ const Upgrade: React.FC<any> = props => {
         <>
           <Modal
             title={'当前版本'+upgradeInfo.app_version}
-            visible={upgradeModalVisible}
+            open={upgradeModalVisible}
             onOk={() => setUpgradeModalVisible(false)}
             onCancel={() => setUpgradeModalVisible(false)}
             footer={null}
@@ -153,7 +153,7 @@ const Upgrade: React.FC<any> = props => {
           </Modal>
           <Modal
             title="系统升级"
-            visible={upgradingModalVisible}
+            open={upgradingModalVisible}
             width={'860px'}
             footer={false}
             closable={false}

@@ -75,7 +75,7 @@ export default defineConfig({
           path: '/account/settings/security',
           component: '../pages/Account/Settings/Security',
         },
-        { 
+        {
           path: '/sms/send',
           component: '../pages/Sms/Send'
         },

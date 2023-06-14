@@ -1,11 +1,12 @@
 import { Button, Col, Input, Row, Form, message } from 'antd';
 import React, { useState, useCallback, useEffect } from 'react';
 import omit from 'omit.js';
-import { FormItemProps } from 'antd/es/form/FormItem';
+import type { FormItemProps } from 'antd/es/form/FormItem';
 import { getSmsCode } from '@/services/quark';
 
 import ItemMap from './map';
-import LoginContext, { LoginContextProps } from './LoginContext';
+import type { LoginContextProps } from './LoginContext';
+import LoginContext from './LoginContext';
 import styles from './index.less';
 
 export type WrappedLoginItemProps = LoginItemProps;
@@ -14,6 +15,7 @@ export interface LoginItemType {
   Username: React.FC<WrappedLoginItemProps>;
   Password: React.FC<WrappedLoginItemProps>;
   Mobile: React.FC<WrappedLoginItemProps>;
+  Email: React.FC<WrappedLoginItemProps>;
   Captcha: React.FC<WrappedLoginItemProps>;
   ImageCaptcha: React.FC<WrappedLoginItemProps>;
 }
@@ -29,7 +31,7 @@ export interface LoginItemProps extends Partial<FormItemProps> {
   updateActive?: LoginContextProps['updateActive'];
   type?: string;
   defaultValue?: string;
-  customProps?: { [key: string]: unknown };
+  customProps?: Record<string, unknown>;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   tabUtil?: LoginContextProps['tabUtil'];
 }
@@ -61,7 +63,7 @@ const getFormItemOptions = ({
 const LoginItem: React.FC<LoginItemProps> = (props) => {
   const [count, setCount] = useState<number>(props.countDown || 0);
   const [timing, setTiming] = useState(false);
-  const [imageCaptcha, getImageCaptcha] = useState('/api/admin/captcha');
+  const [imageCaptcha, getImageCaptcha] = useState(`/api/admin/captcha?random=${Math.random()}`);
 
   // 这么写是为了防止restProps中 带入 onChange, defaultValue, rules props tabUtil
   const {
@@ -151,10 +153,10 @@ const LoginItem: React.FC<LoginItemProps> = (props) => {
             <Input {...customProps} {...otherProps}/>
           </Col>
           <Col span={8}>
-            {<img 
+            {<img
               style={{ cursor: 'pointer' }}
               onClick={() => {
-                getImageCaptcha('/api/admin/captcha?random='+Math.random());
+                getImageCaptcha(`/api/admin/captcha?random=${Math.random()}`);
               }}
               src={imageCaptcha}
               alt="验证码"

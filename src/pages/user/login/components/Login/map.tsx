@@ -56,6 +56,23 @@ export default {
       },
     ],
   },
+  Email: {
+    props: {
+      size: 'large',
+      prefix: <MailTwoTone className={styles.prefixIcon} />,
+      placeholder: 'email address',
+    },
+    rules: [
+      {
+        required: true,
+        message: 'Please enter email address!',
+      },
+      {
+        pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
+        message: 'Wrong email address format!',
+      },
+    ],
+  },
   Captcha: {
     props: {
       size: 'large',
