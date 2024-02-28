@@ -5,10 +5,14 @@ import {ActionType, EditableProTable, ProTable} from "@ant-design/pro-table";
 import {ProFormItem} from '@ant-design/pro-form';
 import {get} from "@/services/action";
 
+let updateKey = '';
 
 const FormTable: React.FC<any> = ({form, field, item}) => {
+
   // 可编辑表格选择弹出
   const [editTableModelVisible, setEditTableModelVisible] = useState(false);
+
+  const [editTableType, setEditTableTypee] = useState<'add' | 'replace'>('add');
   // 可编辑表格action
   const editTableActionRef = useRef<ActionType>();
   const actionRef = useRef<ActionType>();
@@ -54,7 +58,18 @@ const FormTable: React.FC<any> = ({form, field, item}) => {
               编辑
             </a>,
             <a
-              key="delete"
+              key="replacable"
+              onClick={() => {
+                // console.log(item);
+                updateKey = record[item.columns[0].dataIndex];
+                setEditTableTypee('replace');
+                setEditTableModelVisible(true);
+              }}
+            >
+              更换
+            </a>,
+            <a
+              key="deletabke"
               onClick={() => {
                 const tableDataSource = form.getFieldValue(
                   item.name,
@@ -81,6 +96,7 @@ const FormTable: React.FC<any> = ({form, field, item}) => {
           width: '100%',
         }}
         onClick={() => {
+          setEditTableTypee('add');
           setEditTableModelVisible(true);
         }}
         icon={<PlusOutlined/>}>
@@ -97,7 +113,9 @@ const FormTable: React.FC<any> = ({form, field, item}) => {
         columns={item.columns}
         rowKey={item.columns[0].key}
         search={false}
-        rowSelection={{}}
+        rowSelection={{
+          type: editTableType == 'add' ? 'checkbox' : 'radio', // checkbox, radio
+        }}
         actionRef={actionRef}
         tableAlertRender={({selectedRowKeys, onCleanSelected}) => (
           <Space size={24}>
@@ -113,20 +131,42 @@ const FormTable: React.FC<any> = ({form, field, item}) => {
           return (<a onClick={() => {
             onCleanSelected();
             setEditTableModelVisible(false);
-            selectedRowKeys.forEach(key => {
-              data.forEach(i => {
-                if (i[item.columns[0].key] === key) {
-                  const obj = {};
-                  keys.forEach(j => {
-                    if (i[j]) {
-                      obj[j] = i[j];
-                    }
-                  })
-                  // console.log(obj);
-                  editTableActionRef?.current?.addEditRecord(obj);
-                }
-              })
-            });
+            if (editTableType == 'add') {
+              selectedRowKeys.forEach(key => {
+                data.forEach(i => {
+                  if (i[item.columns[0].key] === key) {
+                    const obj = {};
+                    keys.forEach(j => {
+                      if (i[j]) {
+                        obj[j] = i[j];
+                      }
+                    })
+                    // console.log(obj);
+                    editTableActionRef?.current?.addEditRecord(obj);
+                  }
+                })
+              });
+            } else {
+              const tableDataSource = form.getFieldValue(
+                item.name,
+              );
+              const replaceData = data.filter((i: any) => i[item.columns[0].dataIndex] === selectedRowKeys[0])[0] as any;
+              form.setFieldsValue({
+                [item.name]: tableDataSource.map((i: any) => {
+                  if (i[item.columns[0].dataIndex] === updateKey) {
+                    const r = i;
+                    keys.forEach(j => {
+                      if (i[j]) {
+                        r[j] = replaceData[j];
+                      }
+                    })
+                    console.log(r);
+                    return r;
+                  }
+                  return i;
+                })
+              });
+            }
           }
           }>确认选择</a>)
         }}
