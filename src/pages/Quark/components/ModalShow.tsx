@@ -79,6 +79,7 @@ const ModalShow: React.FC<any> = (props: any) => {
     case 'buttonStyle':
       trigger =
         <Button
+          key={props.key}
           type={props.type}
           block={props.block}
           danger={props.danger}

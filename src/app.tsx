@@ -5,7 +5,6 @@ import {ResponseError} from 'umi-request';
 import {queryQuarkInfo, queryQuarkLayout, queryQuarkMenus, queryAccountInfo} from '@/services/quark';
 import defaultSettings from '../config/defaultSettings';
 import logo from './assets/logo.png';
-import {Response} from "express";
 
 export async function getInitialState(): Promise<{
   accountInfo?: API.AccountInfo;
@@ -139,7 +138,9 @@ export const request: RequestConfig = {
     (url: string, options) => {
       options.headers = {
         Accept: 'application/json',
-        Authorization: `Bearer ${sessionStorage.getItem('token') ?? ''}`
+        ...(sessionStorage.getItem('token') ? {Authorization: `Bearer ${sessionStorage.getItem('token')}`} : {}),
+        ...(sessionStorage.getItem('X_PDD_PATI') ? {'X-PDD-Pati': sessionStorage.getItem('X_PDD_PATI')} : {}),
+        ...(sessionStorage.getItem('X_PDD_PAGECODE') ? {'X-PDD-PageCode': sessionStorage.getItem('X_PDD_PAGECODE')} : {})
       };
       return {url, options};
     }

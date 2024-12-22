@@ -1,11 +1,12 @@
-import React, {useState} from 'react';
-import {message} from 'antd';
-import {Link, SelectLang, useModel, history, History, Helmet} from 'umi';
+import React, { useState } from 'react';
+import { message } from 'antd';
+import { Link, SelectLang, useModel, history, History, Helmet } from 'umi';
 import logo from '@/assets/logo.svg';
-import {accountLogin} from '@/services/quark';
+import { accountLogin } from '@/services/quark';
 import Footer from '@/components/Footer';
 import LoginFrom from './components/Login';
 import styles from './style.less';
+import {request} from "umi";
 
 const {Tab, Username, Password, Mobile, Email, Captcha, ImageCaptcha, Submit} = LoginFrom;
 
@@ -37,7 +38,7 @@ const Login: React.FC<{}> = () => {
     setSubmitting(true);
     try {
       const result = await accountLogin({...values, type});
-      if (result.status == 'success' && initialState) {
+      if (result.status === 'success' && initialState) {
         message.success(result.msg);
         // 记录登录凭据
         sessionStorage.setItem('token', result.data.token);
@@ -51,10 +52,30 @@ const Login: React.FC<{}> = () => {
           quarkMenus: quarkMenus.data
         });
         replaceGoto();
+
+        // 获取拼拼多多PageCode
+        await (async function () {
+          try {
+            const resp = await request('/api/admin/pdd/page/code');
+            if (!(resp.code === 0 && resp.data))
+              return;
+            // @ts-ignore
+            await PDD_OPEN_init({code: resp.data})
+            // @ts-ignore
+            const pati = await window.PDD_OPEN_getPati()
+            // 使用 pati
+            console.log(`获得拼多多PATI：${pati}`)
+            if (pati) {
+              sessionStorage.setItem('X_PDD_PAGECODE', resp.data);
+              sessionStorage.setItem('X_PDD_PATI', pati);
+            }
+          } catch (e) {
+            console.log(e)
+          }
+        })()
         return;
-      } else {
-        message.error(result.msg);
       }
+      message.error(result.msg);
     } catch (error) {
       message.error('登录失败，请重试！');
     }
@@ -216,10 +237,10 @@ const Login: React.FC<{}> = () => {
           break;
       }
       loginForm =
-        <LoginFrom onSubmit={handleSubmit}>
-          {loginForm}
-          <Submit loading={submitting}>登录</Submit>
-        </LoginFrom>
+      <LoginFrom onSubmit={handleSubmit}>
+        {loginForm}
+        <Submit loading={submitting}>登录</Submit>
+      </LoginFrom>
     }
     return loginForm;
   };
