@@ -25,7 +25,7 @@ export interface Action {
 const RowAction: React.FC<Action> = (props) => {
   const { initialState } = useModel('@@initialState');
   const IconFont = createFromIconfontCN({
-    scriptUrl: initialState.settings.iconfontUrl,
+    scriptUrl: initialState?.settings?.iconfontUrl,
   });
   const { confirm } = Modal;
 

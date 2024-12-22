@@ -142,6 +142,7 @@ const DrawerForm: React.FC<any> = (props: any) => {
         </Button>
         <Button
           loading={loading}
+          disabled={loading}
           onClick={() => {
             form.validateFields().then((values: any) => {
               setLoading(true);

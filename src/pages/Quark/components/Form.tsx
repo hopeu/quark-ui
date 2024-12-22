@@ -65,9 +65,8 @@ const Form: React.FC<Form> = (props: any) => {
       >
         <ProForm
           form={form}
-          onFinish={async (values: any) => {
-            onFinish(values)
-          }}
+          initialValues={props.form.initialValues}
+          onFinish={onFinish}
           style={props.form.style ? props.form.style : {margin: '25px', width: '100%'}}
           colon={props.form.colon}
           labelAlign={props.form.labelAlign}
@@ -116,6 +115,7 @@ const Form: React.FC<Form> = (props: any) => {
     return (
       <ProForm
         form={form}
+        initialValues={props.form.initialValues}
         onFinish={async (values: any) => {
           onFinish(values)
         }}

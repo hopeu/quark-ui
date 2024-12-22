@@ -70,7 +70,7 @@ const BatchAction: React.FC<Action> = (props) => {
 
   // 执行行为
   const executeAction = async (api:string) => {
-    const hide = message.loading("请求中")
+    const hide = message.loading("请求中", 30)
     const result = await get({
       actionUrl: replaceQueryVariable(api)
     });

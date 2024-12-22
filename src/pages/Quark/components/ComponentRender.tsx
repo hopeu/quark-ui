@@ -8,11 +8,9 @@ import Form from '@/pages/Quark/components/Form';
 import TabForm from '@/pages/Quark/components/TabForm';
 import Show from '@/pages/Quark/components/Show';
 import Upgrade from '@/pages/Quark/components/Upgrade';
+import Statistic from '@/pages/Quark/components/Statistic'
 
-import {
-  message,
-  Statistic,
-} from 'antd';
+import { message } from 'antd';
 
 const ComponentRender: React.FC<any> = (props:any) => {
 

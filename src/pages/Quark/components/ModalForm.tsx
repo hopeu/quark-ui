@@ -40,6 +40,7 @@ const ModalForm: React.FC<any> = (props: any) => {
   });
 
   const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const getComponent = async () => {
     const result = await get({
@@ -128,32 +129,6 @@ const ModalForm: React.FC<any> = (props: any) => {
       break;
   }
 
-  const formButtonRender = (formComponent: any) => {
-    if (formComponent.disabledSubmitButton === true) {
-      return null;
-    }
-
-    return (
-      <Space>
-        <Button onClick={() => setVisible(false)}>
-          取消
-        </Button>
-        <Button
-          onClick={() => {
-            form.validateFields().then((values: any) => {
-              onFinish(values);
-            }).catch((info: any) => {
-              console.log('Validate Failed:', info);
-            });
-          }}
-          type="primary"
-        >
-          {formComponent.submitButtonText}
-        </Button>
-      </Space>
-    );
-  };
-
   const onFinish = async (values: any) => {
     const result = await post({
       actionUrl: formComponent.api,
@@ -176,6 +151,37 @@ const ModalForm: React.FC<any> = (props: any) => {
     }
   };
 
+  const formButtonRender = (formComponent: any) => {
+    if (formComponent.disabledSubmitButton === true) {
+      return null;
+    }
+
+    return (
+      <Space>
+        <Button onClick={() => setVisible(false)}>
+          取消
+        </Button>
+        <Button
+          loading={loading}
+          disabled={loading}
+          onClick={() => {
+            form.validateFields().then((values: any) => {
+              setLoading(true);
+              onFinish(values).finally(() => {
+                setLoading(false);
+              });
+            }).catch((info: any) => {
+              console.log('Validate Failed:', info);
+            });
+          }}
+          type="primary"
+        >
+          {formComponent.submitButtonText}
+        </Button>
+      </Space>
+    );
+  };
+
   return (
     <>
       {trigger}
@@ -186,7 +192,10 @@ const ModalForm: React.FC<any> = (props: any) => {
         onCancel={() => setVisible(false)}
         onOk={() => {
           form.validateFields().then(values => {
-            onFinish(values);
+            setLoading(true);
+            onFinish(values).finally(() => {
+              setLoading(false);
+            });
           }).catch(info => {
             console.log('Validate Failed:', info);
           });

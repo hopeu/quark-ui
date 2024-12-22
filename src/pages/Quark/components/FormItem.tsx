@@ -43,6 +43,7 @@ export interface FormItem {
   items: any;
   form?: any;
 }
+const autoFillTimeouts = {};
 
 const FormItem: React.FC<FormItem> = (props: any) => {
   const {initialState} = useModel('@@initialState');
@@ -86,6 +87,24 @@ const FormItem: React.FC<FormItem> = (props: any) => {
     getItem[name] = value;
     props.form.setFieldsValue(getItem);
   };
+  const onAutoFill = async (value: any, name: string, url: string) => {
+    if (url && value) {
+      if(autoFillTimeouts[name]){
+        clearTimeout(autoFillTimeouts[name]);
+      }
+      autoFillTimeouts[name] = setTimeout(async () => {
+        delete autoFillTimeouts[name];
+        const result = await get({
+          actionUrl: url ,
+          text: value
+        });
+
+        if (result.status == 'success') {
+          props.form.setFieldsValue(result.data)
+        }
+       }, 1000);
+    }
+  };
 
   // 解析表单item
   const formItemRender = (fromItems: any, field: any = null): any => {
@@ -115,6 +134,7 @@ const FormItem: React.FC<FormItem> = (props: any) => {
                     addonBefore: item.addonBefore,
                     onChange: (e) => {
                       onChange(e.target.value, item.name)
+                      onAutoFill(e.target.value, item.name, item.autofill)
                     },
                     allowClear: item.allowClear,
                     size: item.size
@@ -430,6 +450,25 @@ const FormItem: React.FC<FormItem> = (props: any) => {
                 />
               </ProFormItem>;
             break;
+          case 'month':
+            component =
+              <ProFormDatePicker.Month
+                key={item.key}
+                label={item.label}
+                name={field ? [field.name, item.name] : item.name}
+                fieldKey={field ? [field.fieldKey, item.name] : item.name}
+                rules={item.frontendRules}
+                help={item.help ? item.help : undefined}
+                extra={item.extra}
+                tooltip={item.tooltip}
+                placeholder={item.placeholder}
+                fieldProps={{
+                  format: item.format ? item.format : 'YYYY-MM',
+                  allowClear: item.allowClear,
+                  size: item.size
+                }}
+              />;
+            break;
           case 'date':
             component =
               <ProFormDatePicker
@@ -542,9 +581,8 @@ const FormItem: React.FC<FormItem> = (props: any) => {
           case 'display':
             component =
               <ProFormItem label={item.label} tooltip={item.tooltip}>
-              <span style={item.style ? item.style : []}>
-                {item.value}
-              </span>
+                <span style={item.style ? item.style : []} dangerouslySetInnerHTML={{__html: item.value}}>
+                </span>
               </ProFormItem>
             break;
           case 'editor':

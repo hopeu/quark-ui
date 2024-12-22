@@ -45,9 +45,8 @@ const Search: React.FC<Search> = ({ api=null, mode=undefined, size=undefined, va
     triggerChange(value);
   };
 
+  let timeout: any = null;
   const onInputSearch = (value: any, type='label') => {
-    let timeout: any = null;
-
     if (value) {
       if (timeout) {
         clearTimeout(timeout);
@@ -62,7 +61,7 @@ const Search: React.FC<Search> = ({ api=null, mode=undefined, size=undefined, va
         });
         setSelectOptions(result.data)
         setLoading(false);
-      }, 300);
+      }, 1000);
     }
   };
 
