@@ -208,6 +208,7 @@ const DrawerForm: React.FC<any> = (props: any) => {
           initialValues={formComponent.initialValues}
           labelAlign={formComponent.labelAlign}
           name={formComponent.name}
+          omitNil={false}
           preserve={formComponent.preserve}
           requiredMark={formComponent.requiredMark}
           scrollToFirstError={formComponent.scrollToFirstError}
